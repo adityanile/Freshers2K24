@@ -28,6 +28,8 @@ public class WebManager : MonoBehaviour
         };
 
         string json = JsonUtility.ToJson(studentVM);
+
+        UIManager.instance.ShowPopUp("Loading...", Color.black);
         StartCoroutine(RegisterStudent(json, OnSuccess, OnFail));
     }
 
