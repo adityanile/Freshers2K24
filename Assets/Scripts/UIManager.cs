@@ -69,6 +69,11 @@ public class UIManager : MonoBehaviour
         LocalStorageManager.instance.SaveSessionData();
     }
 
+    public void OnClickTest()
+    {
+        StartCoroutine(WebManager.instance.TestConnection());
+    }
+
     public void RegisterLocally(Student s)
     {
         GameObject inst = Instantiate(entry, parent);

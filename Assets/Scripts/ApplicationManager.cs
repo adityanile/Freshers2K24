@@ -25,6 +25,13 @@ public class ApplicationManager : MonoBehaviour
         ParseCSV();
     }
 
+    private void Update()
+    {
+        // Keyboard Control
+        if (Input.GetKeyDown(KeyCode.Return))
+            UIManager.instance.OnClickEnter();
+    }
+
     public Student ValidateStudent(string prn)
     {
         var s = studentsData.students.Find(s => s.prn == prn);

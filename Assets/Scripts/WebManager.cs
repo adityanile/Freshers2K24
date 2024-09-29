@@ -9,6 +9,7 @@ public class WebManager : MonoBehaviour
 
     private string url = "https://freshers2-k24.vercel.app";
     private string registerPath = "/api/registerStudent";
+    private string testPath = "/api/test";
 
     void Start()
     {
@@ -63,6 +64,27 @@ public class WebManager : MonoBehaviour
                 UIManager.instance.ShowPopUp("Error Connecting Server, Registering Locally", Color.red);
                 OnFail();
             }
+        }
+    }
+
+    public IEnumerator TestConnection()
+    {
+        using (UnityWebRequest req = UnityWebRequest.Get(url + testPath))
+        {
+            yield return req.SendWebRequest();
+
+            if (req.result == UnityWebRequest.Result.Success)
+            {
+                string res = req.downloadHandler.text;
+                RegisterOM registerOM = JsonUtility.FromJson<RegisterOM>(res);
+
+                if (registerOM.status == "success")
+                    UIManager.instance.ShowPopUp("Connection Successful", Color.green);
+                else
+                    UIManager.instance.ShowPopUp("Error Connecting Server", Color.red);
+            }
+            else
+                UIManager.instance.ShowPopUp("Error Connecting Server", Color.red);
         }
     }
 }
