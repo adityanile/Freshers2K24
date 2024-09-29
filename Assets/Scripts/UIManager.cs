@@ -6,10 +6,22 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager instance;
+
     public GameObject entry;
     public Transform parent;
 
+    public TextMeshProUGUI msgUI;
+
     public TMP_InputField uPrn;
+
+    private void Start()
+    {
+        if (instance != null)
+            Destroy(this);
+
+        instance = this;
+    }
 
     public void OnClickEnter()
     {
@@ -20,17 +32,40 @@ public class UIManager : MonoBehaviour
         
         if(s != null)
         {
-            // Here we will mark the student to the list
-            GameObject inst = Instantiate(entry, parent);
-            
-            EntryManager em = inst.GetComponent<EntryManager>();
-            em.SetEntryData(s);
+            WebManager.instance.MarkRegistered(s, () =>
+            {
+                // Here we will mark the student to the list
+                GameObject inst = Instantiate(entry, parent);
+                inst.transform.SetAsFirstSibling();
 
+                uPrn.text = "";
+
+                EntryManager em = inst.GetComponent<EntryManager>();
+                em.SetEntryData(s);
+            });
         }
         else
         {
             uPrn.text = "";
-            Debug.Log("Invalid Student");
+            UIManager.instance.ShowPopUp("No Data Found", Color.red);
         }
+    }
+
+    public void ShowPopUp(string msg, Color color)
+    {
+        StartCoroutine(ShowMsg(msg, color));
+    }
+
+    IEnumerator ShowMsg(string msg, Color color)
+    {
+        msgUI.transform.parent.gameObject.SetActive(true);
+        msgUI.text = msg;
+        msgUI.color = color;
+
+        yield return new WaitForSeconds(3);
+        
+        msgUI.transform.parent.gameObject.SetActive(false);
+        msgUI.text = "";
+        msgUI.color = Color.black;
     }
 }

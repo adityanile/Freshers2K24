@@ -19,5 +19,18 @@ public class Student
     {
         return $"PRN: {prn} Name: {name}";
     }
+}
+[System.Serializable]
+public class RegisterOM
+{
+    public string status;
+    public string msg;
+    public Student newS;
+}
 
+[System.Serializable]   
+public class StudentVM
+{
+    public string prn;
+    public string name;
 }

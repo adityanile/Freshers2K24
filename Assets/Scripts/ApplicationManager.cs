@@ -29,6 +29,7 @@ public class ApplicationManager : MonoBehaviour
         return s == null ? null : s;
     }
 
+
     void ParseCSV()
     {
         var dataSet = Resources.Load(path);
