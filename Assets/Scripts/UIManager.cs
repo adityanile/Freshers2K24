@@ -20,6 +20,11 @@ public class UIManager : MonoBehaviour
         
         if(s != null)
         {
+            // Here we will mark the student to the list
+            GameObject inst = Instantiate(entry, parent);
+            
+            EntryManager em = inst.GetComponent<EntryManager>();
+            em.SetEntryData(s);
 
         }
         else
