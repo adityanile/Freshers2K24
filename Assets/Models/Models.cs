@@ -14,4 +14,10 @@ public class Student
     public string division;
     public string name;
     public bool marked;
+
+    public override string ToString()
+    {
+        return $"PRN: {prn} Name: {name}";
+    }
+
 }

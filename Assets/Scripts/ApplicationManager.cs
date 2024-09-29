@@ -10,7 +10,8 @@ public class ApplicationManager : MonoBehaviour
     public string[] rawData;
     public string path = "FY2K24";
 
-    public FY studentsData = new FY();
+    [SerializeField]
+    private FY studentsData = new FY();
 
     void Start()
     {
@@ -18,8 +19,20 @@ public class ApplicationManager : MonoBehaviour
            Destroy(this);
             
         instance = this;
-        var dataSet = Resources.Load(path);
         
+        ParseCSV();
+    }
+
+    public Student ValidateStudent(string prn)
+    {
+        var s = studentsData.students.Find(s => s.prn == prn);
+        return s == null ? null : s;
+    }
+
+    void ParseCSV()
+    {
+        var dataSet = Resources.Load(path);
+
         rawData = dataSet.ToString().Split(new char[] { '\n' });
         rawData[rawData.Length - 1] = null;
 
@@ -28,7 +41,7 @@ public class ApplicationManager : MonoBehaviour
             if (s != null)
             {
                 string[] fields = s.Split(new char[] { ',' });
-                
+
                 Student student = new Student
                 {
                     srno = int.Parse(fields[0]),
@@ -41,4 +54,5 @@ public class ApplicationManager : MonoBehaviour
             }
         }
     }
+
 }
