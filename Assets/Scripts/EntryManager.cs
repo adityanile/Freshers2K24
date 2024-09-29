@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +10,15 @@ public class EntryManager : MonoBehaviour
     {
         student = s;
         name.text = s.ToString();
+
+        SetColor();
+    }
+
+    void SetColor()
+    {
+        if (student.marked)
+            name.color = Color.green;
+        else name.color = Color.red;
     }
 }
 

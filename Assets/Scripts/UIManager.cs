@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -14,6 +13,8 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI msgUI;
 
     public TMP_InputField uPrn;
+
+    public List<GameObject> stdList = new List<GameObject>();
 
     private void Start()
     {
@@ -29,19 +30,23 @@ public class UIManager : MonoBehaviour
         prn = prn.ToUpper();
 
         Student s = ApplicationManager.instance.ValidateStudent(prn);
-        
-        if(s != null)
+
+        if (s != null)
         {
-            WebManager.instance.MarkRegistered(s, () =>
+            WebManager.instance.MarkRegistered(s, OnSuccess: () =>
             {
                 // Here we will mark the student to the list
-                GameObject inst = Instantiate(entry, parent);
-                inst.transform.SetAsFirstSibling();
+                // when successful the marking online then mark locally
 
-                uPrn.text = "";
+                // If we successfully marked online then set marked to true
+                // else if updated locally then let marked = false
 
-                EntryManager em = inst.GetComponent<EntryManager>();
-                em.SetEntryData(s);
+                s.marked = true;
+                RegisterLocally(s);
+
+            }, OnFail: () =>
+            {
+                RegisterLocally(s);
             });
         }
         else
@@ -50,6 +55,37 @@ public class UIManager : MonoBehaviour
             UIManager.instance.ShowPopUp("No Data Found", Color.red);
         }
     }
+
+    public void OnClickClear()
+    {
+        ApplicationManager.instance.registeredStudents.Clear();
+
+        foreach(var i in stdList)
+        {
+            Destroy(i.gameObject);
+        }
+        stdList.Clear();
+
+        LocalStorageManager.instance.SaveSessionData();
+    }
+
+    public void RegisterLocally(Student s)
+    {
+        GameObject inst = Instantiate(entry, parent);
+        inst.transform.SetAsFirstSibling();
+
+        stdList.Add(inst);
+        ApplicationManager.instance.registeredStudents.Add(s);
+
+        uPrn.text = "";
+
+        EntryManager em = inst.GetComponent<EntryManager>();
+        em.SetEntryData(s);
+
+        // Save current state locally
+        LocalStorageManager.instance.SaveSessionData();
+    }
+
 
     public void ShowPopUp(string msg, Color color)
     {
@@ -63,7 +99,7 @@ public class UIManager : MonoBehaviour
         msgUI.color = color;
 
         yield return new WaitForSeconds(3);
-        
+
         msgUI.transform.parent.gameObject.SetActive(false);
         msgUI.text = "";
         msgUI.color = Color.black;

@@ -13,6 +13,8 @@ public class ApplicationManager : MonoBehaviour
     [SerializeField]
     private FY studentsData = new FY();
 
+    public List<Student> registeredStudents = new List<Student>();
+
     void Start()
     {
         if(instance != null)

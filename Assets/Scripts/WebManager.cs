@@ -18,7 +18,7 @@ public class WebManager : MonoBehaviour
         instance = this;
     }
 
-    public void MarkRegistered(Student student, Action callback)
+    public void MarkRegistered(Student student, Action OnSuccess, Action OnFail)
     {
         StudentVM studentVM = new StudentVM
         {
@@ -27,10 +27,10 @@ public class WebManager : MonoBehaviour
         };
 
         string json = JsonUtility.ToJson(studentVM);
-        StartCoroutine(RegisterStudent(json, callback));
+        StartCoroutine(RegisterStudent(json, OnSuccess, OnFail));
     }
 
-    IEnumerator RegisterStudent(string payload, Action callback)
+    IEnumerator RegisterStudent(string payload, Action OnSuccess, Action OnFail)
     {
         using (UnityWebRequest req = UnityWebRequest.Post(url + registerPath, payload, "application/json"))
         {
@@ -44,7 +44,7 @@ public class WebManager : MonoBehaviour
                 if (registerOM.status == "success")
                 {
                     // when user not in database then only add it to list
-                    callback();
+                    OnSuccess();
                     UIManager.instance.ShowPopUp(registerOM.msg, Color.green);
                 }
                 else
@@ -52,13 +52,16 @@ public class WebManager : MonoBehaviour
                     if (registerOM.msg == "Already Registered")
                         UIManager.instance.ShowPopUp(registerOM.msg, Color.red);
                     else
-                        UIManager.instance.ShowPopUp("Error Registering User in Database", Color.red);
+                    {
+                        UIManager.instance.ShowPopUp("Error Registering Online, Registering Locally", Color.red);
+                        OnFail();
+                    }
                 }
             }
             else
             {
-                UIManager.instance.ShowPopUp("Error Connecting Server", Color.red);
-                Debug.Log("Use local DB");
+                UIManager.instance.ShowPopUp("Error Connecting Server, Registering Locally", Color.red);
+                OnFail();
             }
         }
     }

@@ -34,3 +34,9 @@ public class StudentVM
     public string prn;
     public string name;
 }
+
+[System.Serializable]
+public class LocalSaveVM
+{
+    public Student[] registeredStudents;
+}
